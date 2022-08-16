@@ -11,7 +11,7 @@ import (
 )
 
 // struct bookRequest
-type bookRequest struct {
+type BookRequest struct {
 	Title    string      `json:"title" binding:"required"`
 	Author   string      `json:"author" binding:"required"`
 	Desc     string      `json:"desc" binding:"required"`
@@ -23,7 +23,7 @@ type bookRequest struct {
 // create
 func NewBook(c *gin.Context) {
 
-	var bookInput bookRequest
+	var bookInput BookRequest
 
 	err := c.ShouldBindJSON(&bookInput)
 	if err != nil {
@@ -39,7 +39,7 @@ func NewBook(c *gin.Context) {
 		return
 	}
 
-	data := bookRequest{
+	data := BookRequest{
 		Title:    bookInput.Title,
 		Author:   bookInput.Author,
 		Desc:     bookInput.Desc,

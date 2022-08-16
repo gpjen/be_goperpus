@@ -1,10 +1,7 @@
 package main
 
 import (
-	"be_goperpus/config"
 	"be_goperpus/handler"
-	books "be_goperpus/repositories/Books"
-	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -12,22 +9,12 @@ import (
 
 func main() {
 
-	db := config.ConnDb()
+	// db := config.ConnDb()
+	// datarequest := books.NewRepository(db)
 
-	datarequest := books.NewRepository(db)
+	// data, _ := datarequest.FindAll()
 
-	dataJson := books.Books{
-		Title:    "buku baru saja di tambah",
-		Author:   "sarada uzumaki",
-		Desc:     "buku perjalanan hidup petapa genit",
-		Image:    "saradaimuet.jpg",
-		Price:    430000,
-		Discound: 10,
-	}
-
-	err := datarequest.Create(dataJson)
-
-	fmt.Println(err)
+	// fmt.Println(data)
 
 	router := gin.Default()
 	router.GET("/", func(c *gin.Context) {

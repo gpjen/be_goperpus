@@ -1,7 +1,7 @@
 package config
 
 import (
-	books "be_goperpus/repositories/Books"
+	"be_goperpus/books"
 	"fmt"
 
 	"gorm.io/driver/mysql"
