@@ -1,42 +1,63 @@
 package handler
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"github.com/go-playground/validator/v10"
 )
 
-type BookRequest struct {
-	Title string `json:"title"`
-	Desc  string `json:"desc"`
+// struct bookRequest
+type bookRequest struct {
+	Title    string      `json:"title" binding:"required"`
+	Author   string      `json:"author" binding:"required"`
+	Desc     string      `json:"desc" binding:"required"`
+	Image    string      `json:"image"`
+	Price    json.Number `json:"price" binding:"required"`
+	Discound json.Number `json:"discound"`
 }
 
-//create
-
+// create
 func NewBook(c *gin.Context) {
 
-	var bookInput BookRequest
+	var bookInput bookRequest
 
 	err := c.ShouldBindJSON(&bookInput)
 	if err != nil {
+		var errFields []string
+		for _, e := range err.(validator.ValidationErrors) {
+			errMessage := fmt.Sprintf("Error on field %s, condition %s", e.Field(), e.ActualTag())
+			errFields = append(errFields, errMessage)
+		}
 		c.JSON(http.StatusBadRequest, gin.H{
-			"status":  "failed",
-			"message": err.Error(),
+			"status": "failed",
+			"error":  errFields,
 		})
 		return
+	}
+
+	data := bookRequest{
+		Title:    bookInput.Title,
+		Author:   bookInput.Author,
+		Desc:     bookInput.Desc,
+		Image:    bookInput.Image,
+		Price:    bookInput.Price,
+		Discound: bookInput.Discound,
 	}
 
 	c.JSON(http.StatusCreated, gin.H{
 		"status":  "success",
 		"message": "create new book",
-		"data":    bookInput,
+		"data":    data,
 	})
 }
 
 // read
 func GetBooks(c *gin.Context) {
+
 	c.JSON(http.StatusOK, gin.H{
 		"status":  "success",
 		"message": "get books",
