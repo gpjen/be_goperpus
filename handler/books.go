@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"be_goperpus/books"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -10,22 +11,29 @@ import (
 	"github.com/go-playground/validator/v10"
 )
 
-// struct bookRequest
-type BookRequest struct {
-	Title    string      `json:"title" binding:"required"`
-	Author   string      `json:"author" binding:"required"`
-	Desc     string      `json:"desc" binding:"required"`
+type bookHandler struct {
+	bookServices books.Serfices
+}
+
+func NewBookHandler(bookServices books.Serfices) *bookHandler {
+	return &bookHandler{bookServices}
+}
+
+type bookResponse struct {
+	Title    string      `json:"title"`
+	Author   string      `json:"author"`
+	Desc     string      `json:"desc"`
 	Image    string      `json:"image"`
-	Price    json.Number `json:"price" binding:"required"`
+	Price    json.Number `json:"price"`
 	Discound json.Number `json:"discound"`
 }
 
 // create
-func NewBook(c *gin.Context) {
+func (h *bookHandler) NewBook(c *gin.Context) {
 
-	var bookInput BookRequest
+	var bookRequest books.BookRequest
 
-	err := c.ShouldBindJSON(&bookInput)
+	err := c.ShouldBindJSON(&bookRequest)
 	if err != nil {
 		var errFields []string
 		for _, e := range err.(validator.ValidationErrors) {
@@ -39,13 +47,13 @@ func NewBook(c *gin.Context) {
 		return
 	}
 
-	data := BookRequest{
-		Title:    bookInput.Title,
-		Author:   bookInput.Author,
-		Desc:     bookInput.Desc,
-		Image:    bookInput.Image,
-		Price:    bookInput.Price,
-		Discound: bookInput.Discound,
+	data, err := h.bookServices.Create(bookRequest)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"status": "failed",
+			"error":  err.Error(),
+		})
+		return
 	}
 
 	c.JSON(http.StatusCreated, gin.H{
@@ -56,7 +64,7 @@ func NewBook(c *gin.Context) {
 }
 
 // read
-func GetBooks(c *gin.Context) {
+func (h *bookHandler) GetBooks(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{
 		"status":  "success",
@@ -66,7 +74,7 @@ func GetBooks(c *gin.Context) {
 }
 
 // read by id
-func GetBookById(c *gin.Context) {
+func (h *bookHandler) GetBookById(c *gin.Context) {
 	idString := c.Param("id")
 	id, err := strconv.Atoi(idString)
 	if err != nil {
@@ -84,7 +92,7 @@ func GetBookById(c *gin.Context) {
 }
 
 // update book
-func UpdateBook(c *gin.Context) {
+func (h *bookHandler) UpdateBook(c *gin.Context) {
 	idString := c.Param("id")
 	id, err := strconv.Atoi(idString)
 	if err != nil {
@@ -102,7 +110,7 @@ func UpdateBook(c *gin.Context) {
 }
 
 // delete book
-func DeleteBook(c *gin.Context) {
+func (h *bookHandler) DeleteBook(c *gin.Context) {
 	idString := c.Param("id")
 	id, err := strconv.Atoi(idString)
 	if err != nil {

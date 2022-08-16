@@ -1,6 +1,8 @@
 package main
 
 import (
+	"be_goperpus/books"
+	"be_goperpus/config"
 	"be_goperpus/handler"
 	"net/http"
 
@@ -9,12 +11,10 @@ import (
 
 func main() {
 
-	// db := config.ConnDb()
-	// datarequest := books.NewRepository(db)
-
-	// data, _ := datarequest.FindAll()
-
-	// fmt.Println(data)
+	db := config.ConnDb()
+	bookRepositoriy := books.NewRepository(db)
+	bookServices := books.NewServices(bookRepositoriy)
+	bookHandler := handler.NewBookHandler(bookServices)
 
 	router := gin.Default()
 	router.GET("/", func(c *gin.Context) {
@@ -25,11 +25,11 @@ func main() {
 	})
 
 	V1 := router.Group("/v1")
-	V1.GET("/books", handler.GetBooks)
-	V1.GET("/book/:id", handler.GetBookById)
-	V1.POST("/book", handler.NewBook)
-	V1.PATCH("/book/:id", handler.UpdateBook)
-	V1.DELETE("/book/:id", handler.DeleteBook)
+	V1.GET("/books", bookHandler.GetBooks)
+	V1.GET("/book/:id", bookHandler.GetBookById)
+	V1.POST("/book", bookHandler.NewBook)
+	V1.PATCH("/book/:id", bookHandler.UpdateBook)
+	V1.DELETE("/book/:id", bookHandler.DeleteBook)
 
 	router.Run(":8888")
 }

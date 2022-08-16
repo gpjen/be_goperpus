@@ -3,11 +3,11 @@ package books
 import "gorm.io/gorm"
 
 type Repository interface {
-	Create(book Books) error
 	FindAll() ([]Books, error)
 	FindById(Id int) (Books, error)
-	Update(book Books) error
-	Delete(book Books) error
+	Create(book Books) (Books, error)
+	// Update(book Books) (Books, error)
+	// Delete(book Books) (Books, error)
 }
 
 type repository struct {
@@ -19,8 +19,9 @@ func NewRepository(db *gorm.DB) *repository {
 }
 
 // create
-func (r *repository) Create(book Books) error {
-	return r.db.Create(&book).Error
+func (r *repository) Create(book Books) (Books, error) {
+	err := r.db.Create(&book).Error
+	return book, err
 }
 
 // get books
@@ -38,11 +39,13 @@ func (r *repository) FindById(Id int) (Books, error) {
 }
 
 // update book
-func (r *repository) Update(book Books) error {
-	return r.db.Save(&book).Error
+func (r *repository) Update(book Books) (Books, error) {
+	err := r.db.Save(&book).Error
+	return book, err
 }
 
 // delete book
-func (r *repository) Delete(book Books) error {
-	return r.db.Delete(&book).Error
+func (r *repository) Delete(book Books) (Books, error) {
+	err := r.db.Delete(&book).Error
+	return book, err
 }
