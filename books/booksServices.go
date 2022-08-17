@@ -1,11 +1,11 @@
 package books
 
-type Serfices interface {
+type Services interface {
 	FindAll() ([]Books, error)
 	FindById(Id int) (Books, error)
 	Create(bookRequest BookRequest) (Books, error)
-	// Update(bookRequest BookRequest, Id int) (Books, error)
-	// Delete(bookRequest BookRequest) (Books, error)
+	Update(bookRequest BookRequest, Id int) (Books, error)
+	Delete(Id int) (Books, error)
 }
 
 type services struct {
@@ -26,37 +26,46 @@ func (s *services) FindById(Id int) (Books, error) {
 
 func (s *services) Create(bookRequest BookRequest) (Books, error) {
 
-	price, _ := bookRequest.Price.Int64()
-	discount, _ := bookRequest.Price.Int64()
-	rating, _ := bookRequest.Rating.Int64()
-
 	bookData := Books{
 		Title:    bookRequest.Title,
 		Author:   bookRequest.Author,
 		Desc:     bookRequest.Desc,
 		Image:    bookRequest.Image,
-		Price:    uint(price),
-		Discound: uint(discount),
-		Rating:   uint(rating),
+		Price:    bookRequest.Price,
+		Discound: bookRequest.Discound,
+		Rating:   bookRequest.Rating,
 	}
 
 	data, err := s.repository.Create(bookData)
 	return data, err
 }
 
-// func (s *services) Update(bookRequest BookRequest, Id int) (Books, error) {
+func (s *services) Update(bookRequest BookRequest, Id int) (Books, error) {
 
-// 	price, _ := bookRequest.Price.Int64()
-// 	discound, _ := bookRequest.Discound.Int64()
+	getData, err := s.repository.FindById(Id)
 
-// 	dataUpdate := Books{
-// 		Title:    bookRequest.Title,
-// 		Author:   bookRequest.Author,
-// 		Desc:     bookRequest.Desc,
-// 		Image:    bookRequest.Image,
-// 		Price:    uint(price),
-// 		Discound: uint(discound),
-// 	}
+	if err != nil {
+		return getData, err
+	}
 
-// 	return s.repository.Update(&dataUpdate, Id).Error()
-// }
+	getData.Title = bookRequest.Title
+	getData.Author = bookRequest.Author
+	getData.Desc = bookRequest.Desc
+	getData.Image = bookRequest.Image
+	getData.Price = bookRequest.Price
+	getData.Discound = bookRequest.Discound
+
+	bookUpdate, err := s.repository.Update(getData)
+
+	return bookUpdate, err
+}
+
+func (s *services) Delete(Id int) (Books, error) {
+	getData, err := s.repository.FindById(Id)
+	if err != nil {
+		return getData, err
+	}
+
+	data, err := s.repository.Delete(getData)
+	return data, err
+}

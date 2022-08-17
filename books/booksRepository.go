@@ -1,13 +1,17 @@
 package books
 
-import "gorm.io/gorm"
+import (
+	"errors"
+
+	"gorm.io/gorm"
+)
 
 type Repository interface {
 	FindAll() ([]Books, error)
 	FindById(Id int) (Books, error)
 	Create(book Books) (Books, error)
-	// Update(book Books) (Books, error)
-	// Delete(book Books) (Books, error)
+	Update(book Books) (Books, error)
+	Delete(book Books) (Books, error)
 }
 
 type repository struct {
@@ -35,6 +39,10 @@ func (r *repository) FindAll() ([]Books, error) {
 func (r *repository) FindById(Id int) (Books, error) {
 	var book Books
 	err := r.db.Find(&book, Id).Error
+	if book.ID < 1 {
+		err := errors.New("no data on this id")
+		return Books{}, err
+	}
 	return book, err
 }
 
