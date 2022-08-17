@@ -33,7 +33,6 @@ func (s *services) Create(bookRequest BookRequest) (Books, error) {
 		Image:    bookRequest.Image,
 		Price:    bookRequest.Price,
 		Discound: bookRequest.Discound,
-		Rating:   bookRequest.Rating,
 	}
 
 	data, err := s.repository.Create(bookData)

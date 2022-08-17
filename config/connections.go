@@ -2,6 +2,7 @@ package config
 
 import (
 	"be_goperpus/books"
+	"be_goperpus/users"
 	"fmt"
 	"os"
 
@@ -30,6 +31,7 @@ func ConnDb() (db *gorm.DB) {
 	}
 
 	db.AutoMigrate(&books.Books{})
+	db.AutoMigrate(&users.Users{})
 
 	fmt.Println("database connection success")
 	return

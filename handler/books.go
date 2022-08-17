@@ -7,7 +7,6 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
-	"github.com/go-playground/validator/v10"
 )
 
 type bookHandler struct {
@@ -20,6 +19,7 @@ func NewBookHandler(bookServices books.Services) *bookHandler {
 
 // data response
 func convertToBookResponse(getBook books.Books) books.BookResponse {
+
 	return books.BookResponse{
 		ID:        getBook.ID,
 		Title:     getBook.Title,
@@ -40,14 +40,14 @@ func (h *bookHandler) NewBook(c *gin.Context) {
 
 	err := c.ShouldBindJSON(&bookRequest)
 	if err != nil {
-		var errFields []string
-		for _, e := range err.(validator.ValidationErrors) {
-			errMessage := fmt.Sprintf("Error on field %s, condition %s", e.Field(), e.ActualTag())
-			errFields = append(errFields, errMessage)
-		}
+		// var errFields []string
+		// for _, e := range err.(validator.ValidationErrors) {
+		// 	errMessage := fmt.Sprintf("Error on field %s, condition %s", e.Field(), e.ActualTag())
+		// 	errFields = append(errFields, errMessage)
+		// }
 		c.JSON(http.StatusBadRequest, gin.H{
 			"status": "failed",
-			"error":  errFields,
+			"error":  err.Error(),
 		})
 		return
 	}

@@ -4,26 +4,25 @@ import (
 	"be_goperpus/books"
 	"be_goperpus/config"
 	"be_goperpus/handler"
-	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
 
+var (
+	db = config.ConnDb()
+
+	//books
+	bookRepositoriy = books.NewRepository(db)
+	bookServices    = books.NewServices(bookRepositoriy)
+
+	//handler
+	bookHandler = handler.NewBookHandler(bookServices)
+)
+
 func main() {
-	db := config.ConnDb()
 	defer config.CloseDb(db)
 
-	bookRepositoriy := books.NewRepository(db)
-	bookServices := books.NewServices(bookRepositoriy)
-	bookHandler := handler.NewBookHandler(bookServices)
-
 	router := gin.Default()
-	router.GET("/", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{
-			"status":  "success",
-			"message": "server oke",
-		})
-	})
 
 	V1 := router.Group("/v1")
 	V1.GET("/books", bookHandler.GetBooks)
