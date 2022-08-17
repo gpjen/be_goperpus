@@ -18,7 +18,7 @@ type BookRequest struct {
 
 // struct bookResponse
 type BookResponse struct {
-	ID        uint        `json:"id"`
+	ID        uint64      `json:"id"`
 	Title     string      `json:"title"`
 	Author    string      `json:"author"`
 	Desc      string      `json:"desc"`

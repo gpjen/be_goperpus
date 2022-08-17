@@ -22,12 +22,6 @@ func NewRepository(db *gorm.DB) *repository {
 	return &repository{db}
 }
 
-// create
-func (r *repository) Create(book Books) (Books, error) {
-	err := r.db.Create(&book).Error
-	return book, err
-}
-
 // get books
 func (r *repository) FindAll() ([]Books, error) {
 	var books []Books
@@ -43,6 +37,12 @@ func (r *repository) FindById(Id int) (Books, error) {
 		err := errors.New("no data on this id")
 		return Books{}, err
 	}
+	return book, err
+}
+
+// create
+func (r *repository) Create(book Books) (Books, error) {
+	err := r.db.Create(&book).Error
 	return book, err
 }
 

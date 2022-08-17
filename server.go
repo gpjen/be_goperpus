@@ -10,8 +10,9 @@ import (
 )
 
 func main() {
-
 	db := config.ConnDb()
+	defer config.CloseDb(db)
+
 	bookRepositoriy := books.NewRepository(db)
 	bookServices := books.NewServices(bookRepositoriy)
 	bookHandler := handler.NewBookHandler(bookServices)
